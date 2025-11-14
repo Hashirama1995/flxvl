@@ -1,5 +1,5 @@
 
-// C++17, GStreamer 1.0+, header-only
+// C++17, header-only
 // Поддержка: BOOL, INT32, ..., STRING, FRACTION, CAPS, ENUM, FLAGS, STRUCTURE
 #pragma once
 
@@ -16,7 +16,7 @@
 #include <variant>
 #include <vector>
 
-namespace FlexValue
+namespace fxv
 {
 
 	// ============================================================
@@ -262,6 +262,22 @@ namespace FlexValue
 			data(v)
 		{}
 
+		explicit Value(int8_t v) :
+			data(v)
+		{}
+
+		explicit Value(uint8_t v) :
+			data(v)
+		{}
+
+		explicit Value(int16_t v) :
+			data(v)
+		{}
+
+		explicit Value(uint16_t v) :
+			data(v)
+		{}
+
 		explicit Value(int32_t v) :
 			data(v)
 		{}
@@ -350,6 +366,10 @@ namespace FlexValue
 					using T = std::decay_t<decltype(arg)>;
 					if constexpr (std::is_same_v<T, std::monostate>) return "null";
 					else if constexpr (std::is_same_v<T, bool>) return "bool";
+					else if constexpr (std::is_same_v<T, int16_t>) return "int8";
+					else if constexpr (std::is_same_v<T, uint16_t>) return "uint8";
+					else if constexpr (std::is_same_v<T, int16_t>) return "int16";
+					else if constexpr (std::is_same_v<T, uint16_t>) return "uint16";
 					else if constexpr (std::is_same_v<T, int32_t>) return "int32";
 					else if constexpr (std::is_same_v<T, uint32_t>) return "uint32";
 					else if constexpr (std::is_same_v<T, int64_t>) return "int64";
@@ -910,4 +930,4 @@ namespace FlexValue
 		static std::string type_name(const Value& val) { return val.typeid_name(); }
 	};
 
-} // namespace FlexValue
+} // namespace fxv

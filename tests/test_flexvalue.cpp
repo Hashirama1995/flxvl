@@ -3,7 +3,7 @@
 
 #include <flexvalue/FlexValue.hpp>
 
-using namespace FlexValue;
+using namespace fxv;
 
 namespace {
 #define UNREFERENCED(P)          (P)
