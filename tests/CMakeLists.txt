@@ -12,7 +12,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(test_flexvalue test_flexvalue.cpp)
+add_executable(test_flexvalue test_flexvalue.cpp dvb_hardcore.cpp)
 target_link_libraries(test_flexvalue PRIVATE flexvalue GTest::gtest_main)
 
 if(COMMAND set_project_warnings)
