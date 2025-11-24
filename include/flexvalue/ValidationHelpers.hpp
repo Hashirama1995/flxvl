@@ -211,22 +211,26 @@ namespace fxv
 
 		bool validate_type(const Value& v, std::string& error) const
 		{
-			if (type_name == "null") return v.is_null();
-			if (type_name == "bool") return v.is<bool>();
-			if (type_name == "int32") return v.is<int32_t>();
-			if (type_name == "uint32") return v.is<uint32_t>();
-			if (type_name == "int64") return v.is<int64_t>();
-			if (type_name == "uint64") return v.is<uint64_t>();
-			if (type_name == "float") return v.is<float>();
-			if (type_name == "double") return v.is<double>();
-			if (type_name == "string") return v.is<std::string>();
-			if (type_name == "fraction") return v.is<Fraction>();
-			if (type_name == "enum") return v.is<EnumValue>();
-			if (type_name == "flags") return v.is<FlagsValue>();
-			if (type_name == "array") return v.is<CowBox<Array>>();
-			if (type_name == "map") return v.is<CowBox<Map>>();
+			if (type_name == str_types::NULL_T) return v.is_null();
+			if (type_name == str_types::BOOL_T) return v.is<bool>();
+			if (type_name == str_types::UINT8_T) return v.is<int8_t>();
+			if (type_name == str_types::UINT8_T) return v.is<uint8_t>();
+			if (type_name == str_types::INT16_T) return v.is<int16_t>();
+			if (type_name == str_types::UINT16_T) return v.is<uint16_t>();
+			if (type_name == str_types::INT32_T) return v.is<int32_t>();
+			if (type_name == str_types::UINT32_T) return v.is<uint32_t>();
+			if (type_name == str_types::INT64_T) return v.is<int64_t>();
+			if (type_name == str_types::UINT64_T) return v.is<uint64_t>();
+			if (type_name == str_types::FLOAT_T) return v.is<float>();
+			if (type_name == str_types::DOUBLE_T) return v.is<double>();
+			if (type_name == str_types::STRING_T) return v.is<std::string>();
+			if (type_name == str_types::FRC_T) return v.is<Fraction>();
+			if (type_name == str_types::ENUM_T) return v.is<EnumValue>();
+			if (type_name == str_types::FLAG_T) return v.is<FlagsValue>();
+			if (type_name == str_types::ARRAY_T) return v.is<CowBox<Array>>();
+			if (type_name == str_types::MAP_T) return v.is<CowBox<Map>>();
 
-			error = "Unknown type: " + type_name;
+			error = str_types::UNK_T;
 			return false;
 		}
 	};

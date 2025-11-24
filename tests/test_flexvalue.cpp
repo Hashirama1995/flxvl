@@ -789,7 +789,7 @@ TEST(FlexValueEdgeCases, EmptyContainers) {
 TEST(FlexValueEdgeCases, NullValue) {
   Value null_val = make_null();
   EXPECT_TRUE(null_val.is_null());
-  EXPECT_EQ(ValueIntrospector::type_name(null_val), "null");
+  EXPECT_EQ(ValueIntrospector::type_name(null_val), str_types::NULL_T);
 }
 
 TEST(FlexValueEdgeCases, StringWithSpecialChars) {

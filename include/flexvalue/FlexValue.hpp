@@ -18,6 +18,27 @@
 
 namespace fxv
 {
+	namespace str_types {
+		constexpr auto NULL_T = "null";
+		constexpr auto BOOL_T = "bool";
+		constexpr auto INT8_T = "int8";
+		constexpr auto UINT8_T = "uint8";
+		constexpr auto INT16_T = "int16";
+		constexpr auto UINT16_T = "uint16";
+		constexpr auto INT32_T = "int32";
+		constexpr auto UINT32_T = "uint32";
+		constexpr auto INT64_T = "int64";
+		constexpr auto UINT64_T = "uint64";
+		constexpr auto FLOAT_T = "float";
+		constexpr auto DOUBLE_T = "double";
+		constexpr auto STRING_T = "string";
+		constexpr auto FRC_T = "fraction";
+		constexpr auto ENUM_T = "enum";
+		constexpr auto FLAG_T = "flags";
+		constexpr auto ARRAY_T = "array";
+		constexpr auto MAP_T = "map";
+		constexpr auto UNK_T = "unknown";
+	}
 
 	// ============================================================
 	// Structured exceptions with path information
@@ -238,6 +259,10 @@ namespace fxv
 		std::variant<
 			std::monostate,
 			bool,
+			int8_t,
+			uint8_t,
+			int16_t,
+			uint16_t,
 			int32_t,
 			uint32_t,
 			int64_t,
@@ -364,29 +389,29 @@ namespace fxv
 			return std::visit(
 				[](auto const& arg) -> std::string {
 					using T = std::decay_t<decltype(arg)>;
-					if constexpr (std::is_same_v<T, std::monostate>) return "null";
-					else if constexpr (std::is_same_v<T, bool>) return "bool";
-					else if constexpr (std::is_same_v<T, int16_t>) return "int8";
-					else if constexpr (std::is_same_v<T, uint16_t>) return "uint8";
-					else if constexpr (std::is_same_v<T, int16_t>) return "int16";
-					else if constexpr (std::is_same_v<T, uint16_t>) return "uint16";
-					else if constexpr (std::is_same_v<T, int32_t>) return "int32";
-					else if constexpr (std::is_same_v<T, uint32_t>) return "uint32";
-					else if constexpr (std::is_same_v<T, int64_t>) return "int64";
-					else if constexpr (std::is_same_v<T, uint64_t>) return "uint64";
-					else if constexpr (std::is_same_v<T, float>) return "float";
-					else if constexpr (std::is_same_v<T, double>) return "double";
+					if constexpr (std::is_same_v<T, std::monostate>) return str_types::NULL_T;
+					else if constexpr (std::is_same_v<T, bool>) return str_types::BOOL_T;
+					else if constexpr (std::is_same_v<T, int16_t>) return str_types::INT8_T;
+					else if constexpr (std::is_same_v<T, uint16_t>) return str_types::UINT8_T;
+					else if constexpr (std::is_same_v<T, int16_t>) return str_types::INT16_T;
+					else if constexpr (std::is_same_v<T, uint16_t>) return str_types::UINT16_T;
+					else if constexpr (std::is_same_v<T, int32_t>) return str_types::INT32_T;
+					else if constexpr (std::is_same_v<T, uint32_t>) return str_types::UINT32_T;
+					else if constexpr (std::is_same_v<T, int64_t>) return str_types::INT64_T;
+					else if constexpr (std::is_same_v<T, uint64_t>) return str_types::UINT64_T;
+					else if constexpr (std::is_same_v<T, float>) return str_types::FLOAT_T;
+					else if constexpr (std::is_same_v<T, double>) return str_types::DOUBLE_T;
 					else if constexpr (std::is_same_v<T, std::string>)
-						return "string";
+						return str_types::STRING_T;
 					else if constexpr (std::is_same_v<T, Fraction>)
-						return "fraction";
-					else if constexpr (std::is_same_v<T, EnumValue>) return "enum";
+						return str_types::FRC_T;
+					else if constexpr (std::is_same_v<T, EnumValue>) return str_types::ENUM_T;
 					else if constexpr (std::is_same_v<T, FlagsValue>)
-						return "flags";
+						return str_types::FLAG_T;
 					else if constexpr (std::is_same_v<T, CowBox<Array>>)
-						return "array";
-					else if constexpr (std::is_same_v<T, CowBox<Map>>) return "map";
-					else return "unknown";
+						return str_types::ARRAY_T;
+					else if constexpr (std::is_same_v<T, CowBox<Map>>) return str_types::MAP_T;
+					else return str_types::UNK_T;
 				},
 				data
 					);
