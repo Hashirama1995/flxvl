@@ -79,44 +79,34 @@ namespace fxv
 		}
 	}
 
-	// ============================================================
-	// Map access with path tracking
-	// ============================================================
 	inline Value& map_get(
-		Value& val, const std::string& key, const std::string& parent_path = ""
+		Value& val, const std::string& key
 	)
 	{
-		const std::string path
-			= (parent_path.empty() ? "/" : parent_path) + "/" + key;
 		if (!val.is<CowBox<Map>>()) {
-			throw NotContainerException("Map", path);
+			throw NotContainerException("Map");
 		}
-		auto& m = val.as<CowBox<Map>>(path).get();
+		auto& m = val.as<CowBox<Map>>().get();
 		auto it = m.fields.find(key);
 		if (it == m.fields.end()) {
-			throw KeyNotFoundException(key, path);
+			throw KeyNotFoundException(key);
 		}
-		val.last_access_path = path;
 		return it->second;
 	}
 
 	inline const Value& map_get(
 		const Value& val,
-		const std::string& key,
-		const std::string& parent_path = ""
+		const std::string& key
 	)
 	{
-		const std::string path
-			= (parent_path.empty() ? "/" : parent_path) + "/" + key;
 		if (!val.is<CowBox<Map>>()) {
-			throw NotContainerException("Map", path);
+			throw NotContainerException("Map");
 		}
-		const auto& fields = val.as<CowBox<Map>>(path).get().fields;
+		const auto& fields = val.as<CowBox<Map>>().get().fields;
 		auto it = fields.find(key);
 		if (it == fields.end()) {
-			throw KeyNotFoundException(key, path);
+			throw KeyNotFoundException(key);
 		}
-		val.last_access_path = path;
 		return it->second;
 	}
 
@@ -129,16 +119,13 @@ namespace fxv
 	inline void map_set(
 		Value& val,
 		const std::string& key,
-		Value v,
-		const std::string& parent_path = ""
+		Value v
 	)
 	{
-		const std::string path
-			= (parent_path.empty() ? "/" : parent_path) + "/" + key;
 		if (!val.is<CowBox<Map>>()) {
-			throw NotContainerException("Map", path);
+			throw NotContainerException("Map");
 		}
-		auto& m = val.as<CowBox<Map>>(path).get();
+		auto& m = val.as<CowBox<Map>>().get();
 		m.fields[key] = std::move(v);
 	}
 
@@ -146,24 +133,20 @@ namespace fxv
 	inline void map_set(
 		Value& val,
 		const std::string& key,
-		U&& u,
-		const std::string& parent_path = ""
+		U&& u
 	)
 	{
-		map_set(val, key, wrap(std::forward<U>(u)), parent_path);
+		map_set(val, key, wrap(std::forward<U>(u)));
 	}
 
 	inline bool map_set_strict(
 		Value& val,
 		const std::string& key,
-		Value v,
-		const std::string& parent_path = ""
+		Value v
 	)
 	{
-		const std::string path
-			= (parent_path.empty() ? "/" : parent_path) + "/" + key;
 		if (!val.is<CowBox<Map>>()) return false;
-		auto& m = val.as<CowBox<Map>>(path).get();
+		auto& m = val.as<CowBox<Map>>().get();
 		auto it = m.fields.find(key);
 		if (it == m.fields.end()) return false;
 		it->second = std::move(v);
@@ -174,67 +157,61 @@ namespace fxv
 	inline bool map_set_strict(
 		Value& val,
 		const std::string& key,
-		U&& u,
-		const std::string& parent_path = ""
+		U&& u
 	)
 	{
-		return map_set_strict(val, key, wrap(std::forward<U>(u)), parent_path);
+		return map_set_strict(val, key, wrap(std::forward<U>(u)));
 	}
 
 	// ============================================================
 	// Array access with path tracking
 	// ============================================================
 	inline void
-		array_push(Value& val, Value item, const std::string& parent_path = "")
+		array_push(Value& val, Value item)
 	{
-		const std::string path = (parent_path.empty() ? "/" : parent_path) + "[]";
 		if (!val.is<CowBox<Array>>()) {
-			throw NotContainerException("Array", path);
+			throw NotContainerException("Array");
 		}
-		val.as<CowBox<Array>>(path).get().items.push_back(std::move(item));
+		val.as<CowBox<Array>>().get().items.push_back(std::move(item));
 	}
 
 	template<class U>
-	inline void array_push(Value& val, U&& u, const std::string& parent_path = "")
+	inline void array_push(Value& val, U&& u)
 	{
-		array_push(val, wrap(std::forward<U>(u)), parent_path);
+		array_push(val, wrap(std::forward<U>(u)));
 	}
 
-	inline size_t array_size(const Value& val, const std::string& parent_path = "")
+	inline size_t array_size(const Value& val)
 	{
 		if (!val.is<CowBox<Array>>()) {
-			throw NotContainerException("Array", parent_path);
+			throw NotContainerException("Array");
 		}
-		return val.as<CowBox<Array>>(parent_path).get().items.size();
+		return val.as<CowBox<Array>>().get().items.size();
 	}
 
 	inline Value&
-		array_at(Value& val, size_t idx, const std::string& parent_path = "")
+		array_at(Value& val, size_t idx)
 	{
-		const std::string path = (parent_path.empty() ? "/" : parent_path) + "["
-			+ std::to_string(idx) + "]";
 		if (!val.is<CowBox<Array>>()) {
-			throw NotContainerException("Array", path);
+			throw NotContainerException("Array");
 		}
-		auto& arr = val.as<CowBox<Array>>(path).get();
+		auto& arr = val.as<CowBox<Array>>().get();
 		if (idx >= arr.items.size()) {
 			throw std::out_of_range(
 				"Array index out of bounds: " + std::to_string(idx)
-				+ " >= " + std::to_string(arr.items.size()) + " at " + path
+				+ " >= " + std::to_string(arr.items.size())
 			);
 		}
 		return arr.items[idx];
 	}
 
 	inline const Value&
-		array_at(const Value& val, size_t idx, const std::string& parent_path = "")
+		array_at(const Value& val, size_t idx)
 	{
-		const std::string path = (parent_path.empty() ? "/" : parent_path) + "["
-			+ std::to_string(idx) + "]";
 		if (!val.is<CowBox<Array>>()) {
-			throw NotContainerException("Array", path);
+			throw NotContainerException("Array");
 		}
-		const auto& arr = val.as<CowBox<Array>>(path).get();
+		const auto& arr = val.as<CowBox<Array>>().get();
 		if (idx >= arr.items.size()) {
 			throw std::out_of_range("Array index out of bounds");
 		}

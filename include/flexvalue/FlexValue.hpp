@@ -40,34 +40,27 @@ namespace fxv
 		constexpr auto UNK_T = "unknown";
 	}
 
-	// ============================================================
-	// Structured exceptions with path information
-	// ============================================================
+
 	class ValueException : public std::runtime_error
 	{
 	public:
-		std::string path;
 		std::string type_info;
 
 		ValueException(
 			const std::string& msg,
-			const std::string& p = "",
 			const std::string& ti = ""
 		) :
-			std::runtime_error(format_message(msg, p, ti)),
-			path(p),
+			std::runtime_error(format_message(msg, ti)),
 			type_info(ti)
 		{}
 
 	private:
 		static std::string format_message(
 			const std::string& msg,
-			const std::string& path,
 			const std::string& type_info
 		)
 		{
 			std::string result = msg;
-			if (!path.empty()) result += " at path: " + path;
 			if (!type_info.empty()) result += " (type: " + type_info + ")";
 			return result;
 		}
@@ -76,8 +69,8 @@ namespace fxv
 	class KeyNotFoundException : public ValueException
 	{
 	public:
-		KeyNotFoundException(const std::string& key, const std::string& path = "") :
-			ValueException("Key not found: " + key, path, "Map")
+		KeyNotFoundException(const std::string& key) :
+			ValueException("Key not found: " + key, "Map")
 		{}
 	};
 
@@ -86,11 +79,10 @@ namespace fxv
 	public:
 		TypeMismatchException(
 			const std::string& expected,
-			const std::string& actual,
-			const std::string& path = ""
+			const std::string& actual
 		) :
 			ValueException(
-				"Type mismatch: expected " + expected + ", got " + actual, path
+				"Type mismatch: expected " + expected + ", got " + actual
 			)
 		{}
 	};
@@ -99,9 +91,9 @@ namespace fxv
 	{
 	public:
 		NotContainerException(
-			const std::string& container_type, const std::string& path = ""
+			const std::string& container_type
 		) :
-			ValueException("Value is not a " + container_type, path)
+			ValueException("Value is not a " + container_type)
 		{}
 	};
 
@@ -109,9 +101,9 @@ namespace fxv
 	{
 	public:
 		InvalidArgumentException(
-			const std::string& msg, const std::string& path = ""
+			const std::string& msg
 		) :
-			ValueException(msg, path)
+			ValueException(msg)
 		{}
 	};
 
@@ -246,8 +238,6 @@ namespace fxv
 		long ref_count() const { return ptr_.use_count(); }
 	};
 
-	// Вперёд объявляем структуры, которые зависят от Value, но определим их ПОСЛЕ
-	// Value, чтобы std::map<std::string, Value> видел полный тип.
 	struct Array;
 	struct Map;
 
@@ -276,8 +266,6 @@ namespace fxv
 			CowBox<Array>,
 			CowBox<Map>>
 			data;
-
-		mutable std::string last_access_path;
 
 		Value() :
 			data(std::monostate{})
@@ -362,19 +350,19 @@ namespace fxv
 		}
 
 		template<class T>
-		const T& as(const std::string& path = "") const
+		const T& as() const
 		{
 			if (!std::holds_alternative<T>(data)) {
-				throw TypeMismatchException(typeid(T).name(), typeid_name(), path);
+				throw TypeMismatchException(typeid(T).name(), typeid_name());
 			}
 			return std::get<T>(data);
 		}
 
 		template<class T>
-		T& as(const std::string& path = "")
+		T& as()
 		{
 			if (!std::holds_alternative<T>(data)) {
-				throw TypeMismatchException(typeid(T).name(), typeid_name(), path);
+				throw TypeMismatchException(typeid(T).name(), typeid_name());
 			}
 			return std::get<T>(data);
 		}

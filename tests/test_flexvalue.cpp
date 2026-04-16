@@ -510,53 +510,6 @@ TEST(FlexValueCOW, LargeStructureEfficiency) {
 }
 
 // ============================================================
-// ЧАСТЬ 11: PATH TRACKING В ИСКЛЮЧЕНИЯХ
-// ============================================================
-TEST(FlexValueExceptions, KeyNotFoundWithPath) {
-  Value m = make_map();
-  try {
-    map_get(m, "missing");
-    FAIL() << "Should have thrown KeyNotFoundException";
-  } catch (const KeyNotFoundException &e) {
-    EXPECT_TRUE(e.path.find("missing") != std::string::npos);
-  }
-}
-
-TEST(FlexValueExceptions, TypeMismatchWithPath) {
-  Value v{int32_t{42}};
-  try {
-    v.as<std::string>("/root/field");
-    FAIL() << "Should have thrown TypeMismatchException";
-  } catch (const TypeMismatchException &e) {
-    EXPECT_TRUE(e.path.find("field") != std::string::npos);
-    EXPECT_TRUE(std::string(e.what()).find("Type mismatch") !=
-                std::string::npos);
-  }
-}
-
-TEST(FlexValueExceptions, NotContainerException) {
-  Value v{int32_t{42}};
-  try {
-    array_push(v, int32_t{1});
-    FAIL() << "Should have thrown NotContainerException";
-  } catch (const NotContainerException &e) {
-    EXPECT_TRUE(std::string(e.what()).find("Array") != std::string::npos);
-  }
-}
-
-TEST(FlexValueExceptions, ArrayIndexOutOfBounds) {
-  Value arr = make_array();
-  array_push(arr, int32_t{1});
-
-  try {
-    array_at(arr, 5);
-    FAIL() << "Should have thrown out_of_range";
-  } catch (const std::out_of_range &e) {
-    EXPECT_TRUE(std::string(e.what()).find("bounds") != std::string::npos);
-  }
-}
-
-// ============================================================
 // ЧАСТЬ 12: BUILDER PATTERN
 // ============================================================
 TEST(FlexValueBuilder, SimpleMap) {
@@ -1031,23 +984,6 @@ TEST(FlexValueCOWExceptions, ExceptionSafety) {
 }
 
 // ============================================================
-// ТЕСТ 8: last_access_path отслеживание - было пробелом
-// ============================================================
-TEST(FlexValueLastAccessPath, PathTracking) {
-  Value m = make_map();
-  map_set(m, "key1", int32_t{10});
-  map_set(m, "key2", int32_t{20});
-
-  const auto &v1 = map_get(m, "key1");
-  UNREFERENCED(v1);
-  EXPECT_TRUE(m.last_access_path.find("key1") != std::string::npos);
-
-  const auto &v2 = map_get(m, "key2");
-  UNREFERENCED(v2);
-  EXPECT_TRUE(m.last_access_path.find("key2") != std::string::npos);
-}
-
-// ============================================================
 // ТЕСТ 9: Path в исключениях для вложенных структур - было пробелом
 // ============================================================
 TEST(FlexValueExceptionPath, NestedPath) {
@@ -1145,16 +1081,6 @@ TEST(FlexValueBuilder, GetRoot) {
 
   const auto &root = builder.get_root();
   EXPECT_EQ(map_get(root, "key").as<int32_t>(), 42);
-}
-
-// ============================================================
-// ТЕСТ 14: Обработка пустой path в операциях
-// ============================================================
-TEST(FlexValueEmptyPath, Operations) {
-  Value m = make_map();
-  map_set(m, "key", int32_t{10}, ""); // пустая parent_path
-
-  EXPECT_EQ(map_get(m, "key", "").as<int32_t>(), 10);
 }
 
 // ============================================================
